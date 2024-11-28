@@ -96,6 +96,7 @@ public class BossEyeAgent : Agent
         gameObject.transform.Rotate(new Vector3(0, 0, 1), Random.Range(-10f, 10f));
         // Player의 위치 초기화
         player.transform.position = new Vector3(Random.Range(-3.0f, 3.0f), 0.0f, Random.Range(-3.0f, 3.0f));
+        //m_PlayerRb.velocity = new Vector3(Random.Range(-3.0f, 3.0f), 0.0f, Random.Range(-3.0f, 3.0f));
         SetResetParameters();
         Debug.Log("에피소드 시작!!");
     }
