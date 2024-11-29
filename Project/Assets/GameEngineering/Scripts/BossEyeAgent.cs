@@ -42,7 +42,7 @@ public class BossEyeAgent : Agent
     }
     public override void CollectObservations(VectorSensor sensor)
     {
-        // 벡터 센서를 통한 관측 데이터의 수 7mlagents-learn config/ppo/BossEye.yaml --run-id=firstCL개
+        // 벡터 센서를 통한 관측 데이터의 수 7개
         if(useVectorObs)
         {
             // BossEye의 회전량 관측 (3개)

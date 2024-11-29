@@ -435,6 +435,11 @@ PrefabInstance:
       propertyPath: player
       value: 
       objectReference: {fileID: 4810714120485743855}
+    - target: {fileID: 5243055032142308082, guid: 6f53a8d250fd14a2aaeb841a9b321036,
+        type: 3}
+      propertyPath: MaxStep
+      value: 1000
+      objectReference: {fileID: 0}
     - target: {fileID: 6570653839297923309, guid: 6f53a8d250fd14a2aaeb841a9b321036,
         type: 3}
       propertyPath: m_BrainParameters.VectorObservationSize
