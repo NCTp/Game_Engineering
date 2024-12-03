@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,7 +15,7 @@ public class BossEyeAgent : Agent
     [SerializeField] private GameObject player;
     private Rigidbody m_PlayerRb;
     private float m_EpisodeTimer;
-    private const float MAX_EPISODE_TIME = 5f;
+    public float MAX_EPISODE_TIME = 5f;
     public override void Initialize()
     {
         if (player == null)
@@ -109,6 +110,7 @@ public class BossEyeAgent : Agent
     public void SetResetParameters()
     {
         m_EpisodeTimer = 0f;
+        player.GetComponent<Player>().ResetParameters();
     }
 
     // Start is called before the first frame update
@@ -120,5 +122,13 @@ public class BossEyeAgent : Agent
     void Update()
     {
 
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Player"))
+        {
+
+        }
     }
 }

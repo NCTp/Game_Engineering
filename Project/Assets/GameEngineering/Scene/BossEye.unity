@@ -361,7 +361,7 @@ PrefabInstance:
     - target: {fileID: 4378617863325453131, guid: 4e7efb9f139ee45778b861443833f4d8,
         type: 3}
       propertyPath: m_Name
-      value: Floor
+      value: Platform
       objectReference: {fileID: 0}
     - target: {fileID: 7864285415395161796, guid: 4e7efb9f139ee45778b861443833f4d8,
         type: 3}
@@ -486,12 +486,18 @@ PrefabInstance:
       propertyPath: MaxStep
       value: 5000
       objectReference: {fileID: 0}
+    - target: {fileID: 5243055032142308082, guid: 6f53a8d250fd14a2aaeb841a9b321036,
+        type: 3}
+      propertyPath: MAX_EPISODE_TIME
+      value: 30
+      objectReference: {fileID: 0}
     - target: {fileID: 7932714548253627709, guid: 6f53a8d250fd14a2aaeb841a9b321036,
         type: 3}
       propertyPath: m_Name
       value: Boss
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1818205995901957873, guid: 6f53a8d250fd14a2aaeb841a9b321036, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -562,12 +568,17 @@ PrefabInstance:
     - target: {fileID: 4850527837024456200, guid: 8991f39dfb7f74486a371182095c255c,
         type: 3}
       propertyPath: speed
-      value: 3
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 4850527837024456200, guid: 8991f39dfb7f74486a371182095c255c,
         type: 3}
       propertyPath: maxHealth
       value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 6091981647159090934, guid: 8991f39dfb7f74486a371182095c255c,
+        type: 3}
+      propertyPath: m_Constraints
+      value: 112
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
