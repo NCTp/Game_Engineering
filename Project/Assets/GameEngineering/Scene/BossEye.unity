@@ -491,6 +491,11 @@ PrefabInstance:
       propertyPath: MAX_EPISODE_TIME
       value: 30
       objectReference: {fileID: 0}
+    - target: {fileID: 5243055032142308082, guid: 6f53a8d250fd14a2aaeb841a9b321036,
+        type: 3}
+      propertyPath: 'player.Array.data[0]'
+      value: 
+      objectReference: {fileID: 4810714120485743855}
     - target: {fileID: 7932714548253627709, guid: 6f53a8d250fd14a2aaeb841a9b321036,
         type: 3}
       propertyPath: m_Name
@@ -563,6 +568,11 @@ PrefabInstance:
     - target: {fileID: 4447771180376486197, guid: 8991f39dfb7f74486a371182095c255c,
         type: 3}
       propertyPath: m_Name
+      value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 4447771180376486197, guid: 8991f39dfb7f74486a371182095c255c,
+        type: 3}
+      propertyPath: m_TagString
       value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 4850527837024456200, guid: 8991f39dfb7f74486a371182095c255c,

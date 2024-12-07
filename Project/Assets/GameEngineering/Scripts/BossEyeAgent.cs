@@ -9,13 +9,28 @@ using Random = UnityEngine.Random;
 
 public class BossEyeAgent : Agent
 {
+
+    [Header("Agent 세팅")]
     public bool useVectorObs;
     private Rigidbody m_BossEyeRb;
     private EnvironmentParameters m_ResetParams;
-    [SerializeField] private GameObject player;
+    [SerializeField] private GameObject[] player;
     private Rigidbody m_PlayerRb;
     private float m_EpisodeTimer;
     public float MAX_EPISODE_TIME = 5f;
+
+    [Header("DropMissile 스킬 세팅")]
+    public float dropMissileTime = 1.0f;
+    public float explosionRadius = 3.0f;
+
+    private Vector3 m_GizmoPosition;
+    private bool m_ShowGizmo;
+    private float m_GizmoDuration = 1f;
+    private float m_GizmoTimer;
+
+
+
+
     public override void Initialize()
     {
         if (player == null)
@@ -31,7 +46,7 @@ public class BossEyeAgent : Agent
             return;
         }
 
-        m_PlayerRb = player.GetComponent<Rigidbody>();
+        m_PlayerRb = player[0].GetComponent<Rigidbody>();
         if (m_PlayerRb == null)
         {
             Debug.LogError("Player의 Rigidbody를 찾을 수 없습니다!");
@@ -71,13 +86,6 @@ public class BossEyeAgent : Agent
         {
             // 연속행동값 받기.
             var continuousActions = actions.ContinuousActions;
-            // X, Z 축 회전.
-            transform.Rotate(Vector3.right, continuousActions[0] * 360f * Time.deltaTime);
-            transform.Rotate(Vector3.forward, continuousActions[1] * 360f * Time.deltaTime);
-            // 플레이어를 바라보는지 확인하기.
-            Vector3 directionToPlayer = (player.transform.position - transform.position).normalized;
-            float dotProduct = Vector3.Dot(transform.forward, directionToPlayer);
-            SetReward(dotProduct * 0.01f);
         }
     }
 
@@ -88,7 +96,6 @@ public class BossEyeAgent : Agent
             Debug.LogError("필수 오브젝트가 없습니다!");
             return;
         }
-
         // BossEye의 회전량 초기화 및 랜덤 회전 추가
         gameObject.transform.rotation = new Quaternion(0f, 0f, 0f, 0f);
         gameObject.transform.localPosition = new Vector3(0f, 1.5f, 0f);
@@ -96,7 +103,7 @@ public class BossEyeAgent : Agent
         gameObject.transform.Rotate(new Vector3(0, 1, 0), Random.Range(-10f, 10f));
         gameObject.transform.Rotate(new Vector3(0, 0, 1), Random.Range(-10f, 10f));
         // Player의 위치 초기화
-        player.transform.localPosition = new Vector3(Random.Range(-5.0f, 3.0f), 0.0f, Random.Range(-5.0f, 3.0f));
+        player[0].transform.localPosition = new Vector3(Random.Range(-5.0f, 3.0f), 0.0f, Random.Range(-5.0f, 3.0f));
         //m_PlayerRb.velocity = new Vector3(Random.Range(-3.0f, 3.0f), 0.0f, Random.Range(-3.0f, 3.0f));
         SetResetParameters();
         Debug.Log("에피소드 시작!!");
@@ -110,25 +117,62 @@ public class BossEyeAgent : Agent
     public void SetResetParameters()
     {
         m_EpisodeTimer = 0f;
-        player.GetComponent<Player>().ResetParameters();
+        player[0].GetComponent<Player>().ResetParameters();
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
+    /////////////////////////// 보스의 액션 구현부 //////////////////////////////
 
+    // DropMissile(Vector3 dropPos)
+    // 특정 지점에 1초 뒤 미사일을 투하합니다.
+    private void DropMissile(Vector3 dropPos)
+    {
+        Debug.Log("Drop Missile Ready");
+
+        // Gizmo 표시를 위한 설정 파트
+        m_GizmoPosition = dropPos;
+        m_GizmoDuration = dropMissileTime;
+        m_ShowGizmo = true;
+        m_GizmoTimer = m_GizmoDuration;
+
+        StartCoroutine(DropMissileCoroutine(dropPos));
     }
-    // Update is called once per frame
-    void Update()
-    {
 
-    }
-
-    private void OnTriggerEnter(Collider other)
+    IEnumerator DropMissileCoroutine(Vector3 dropPos)
     {
-        if (other.gameObject.CompareTag("Player"))
+        yield return new WaitForSeconds(dropMissileTime);
+        m_ShowGizmo = false;
+
+        Debug.Log("Missile Drop");
+
+        Collider[] hitColliders = Physics.OverlapSphere(dropPos, explosionRadius);
+
+        foreach(var hitCollider in hitColliders)
         {
-
+            if(hitCollider.CompareTag("Player"))
+            {
+                Debug.Log("Player Missile Hit!");
+                hitCollider.GetComponent<Player>()?.TakeDamage(110.0f); // 폭발 적중시 바로 플레이어 사망
+                AddReward(2.0f);
+            }
         }
     }
+
+    private void OnDrawGizmos()
+    {
+        if(m_ShowGizmo)
+        {
+            Gizmos.color = new Color(1,0,0,0.5f);
+            Gizmos.DrawWireSphere(m_GizmoPosition, explosionRadius);
+        }
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            DropMissile(new Vector3(4.0f, 0.0f, 4.0f));
+        }
+
+    }
+
 }

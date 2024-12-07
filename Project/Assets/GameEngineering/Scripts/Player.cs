@@ -15,6 +15,7 @@ public class Player : MonoBehaviour
         Healer
     }
     public float maxHealth;
+    public float m_CurrentHealth {get; private set;}
     public float speed;
     private Rigidbody m_rb;
 
@@ -35,10 +36,27 @@ public class Player : MonoBehaviour
         }
 
     }
+
+    public void TakeDamage(float amount)
+    {
+        m_CurrentHealth -= amount;
+        Debug.Log(m_CurrentHealth);
+        if(m_CurrentHealth <= 0)
+        {
+            Dead();
+        }
+    }
+
+    void Dead()
+    {
+        Destroy(this.gameObject);
+    }
+
     void Awake()
     {
         m_rb = GetComponent<Rigidbody>();
         m_CurrentSpeed = Random.Range(-speed, speed);
+        m_CurrentHealth = maxHealth;
     }
     // Start is called before the first frame update
     void Start()
