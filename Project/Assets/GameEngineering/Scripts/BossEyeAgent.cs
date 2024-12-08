@@ -14,26 +14,49 @@ public class BossEyeAgent : Agent
     public bool useVectorObs;
     private Rigidbody m_BossEyeRb;
     private EnvironmentParameters m_ResetParams;
-    [SerializeField] private GameObject[] player;
-    private Rigidbody m_PlayerRb;
+    [SerializeField] private GameObject[] players;
+
+    [Header("Player 관련 파라미터")]
+    public GameObject playerPrefab; // 후에 플레이어 스폰을 위한 플레이어 프리팹
+    private Rigidbody[] m_PlayerRbs;
     private float m_EpisodeTimer;
     public float MAX_EPISODE_TIME = 5f;
 
     [Header("DropMissile 스킬 세팅")]
-    public float dropMissileTime = 1.0f;
-    public float explosionRadius = 3.0f;
+    public float missileDamage = 50.0f;
+    public float dropMissileTime = 0.5f;
+    public float explosionRadius = 5.0f;
 
     private Vector3 m_GizmoPosition;
     private bool m_ShowGizmo;
     private float m_GizmoDuration = 1f;
     private float m_GizmoTimer;
 
+    private Vector3 missileDropPos;
 
 
-
+    void SetUpPlayerInfos()
+    {
+        m_PlayerRbs = new Rigidbody[players.Length];
+        for(int i = 0; i < players.Length; i++)
+        {
+            if (players[i] != null)
+            {
+                // player들의 파라미터 리셋
+                players[i].GetComponent<Player>().ResetParameters();
+                // player들의 리지드바디 불러오기.
+                m_PlayerRbs[i] = players[i].GetComponent<Rigidbody>();
+                if (m_PlayerRbs[i] == null)
+                {
+                    Debug.LogError("Player의 Rigidbody를 찾을 수 없습니다!");
+                    return;
+                }
+            }
+        }
+    }
     public override void Initialize()
     {
-        if (player == null)
+        if (players == null)
         {
             Debug.LogError("Player 오브젝트가 할당되지 않았습니다!");
             return;
@@ -43,13 +66,6 @@ public class BossEyeAgent : Agent
         if (m_BossEyeRb == null)
         {
             Debug.LogError("Rigidbody 컴포넌트를 찾을 수 없습니다!");
-            return;
-        }
-
-        m_PlayerRb = player[0].GetComponent<Rigidbody>();
-        if (m_PlayerRb == null)
-        {
-            Debug.LogError("Player의 Rigidbody를 찾을 수 없습니다!");
             return;
         }
 
@@ -65,12 +81,18 @@ public class BossEyeAgent : Agent
             sensor.AddObservation(gameObject.transform.rotation.x);
             sensor.AddObservation(gameObject.transform.rotation.y);
             sensor.AddObservation(gameObject.transform.rotation.z);
-            // Player의 위치 관측 (3개)
-            sensor.AddObservation(m_PlayerRb.velocity.normalized.x);
-            sensor.AddObservation(m_PlayerRb.velocity.normalized.y);
-            sensor.AddObservation(m_PlayerRb.velocity.normalized.z);
-            // Player와 BossEye의 거리 관측 (1개)
-            sensor.AddObservation((m_PlayerRb.position - m_BossEyeRb.position).magnitude);
+            // Player의 위치 관측 (4 * n개)
+            foreach(Rigidbody m_PlayerRb in m_PlayerRbs)
+            {
+                if (m_PlayerRb != null)
+                {
+                    sensor.AddObservation(m_PlayerRbs[0].velocity.normalized.x);
+                    sensor.AddObservation(m_PlayerRbs[0].velocity.normalized.y);
+                    sensor.AddObservation(m_PlayerRbs[0].velocity.normalized.z);
+                    // Player와 BossEye의 거리 관측
+                    sensor.AddObservation((m_PlayerRbs[0].position - m_BossEyeRb.position).magnitude);
+                }
+            }
         }
     }
     public override void OnActionReceived(ActionBuffers actions)
@@ -91,7 +113,7 @@ public class BossEyeAgent : Agent
 
     public override void OnEpisodeBegin()
     {
-        if (player == null || !gameObject)
+        if (players == null || !gameObject)
         {
             Debug.LogError("필수 오브젝트가 없습니다!");
             return;
@@ -103,7 +125,7 @@ public class BossEyeAgent : Agent
         gameObject.transform.Rotate(new Vector3(0, 1, 0), Random.Range(-10f, 10f));
         gameObject.transform.Rotate(new Vector3(0, 0, 1), Random.Range(-10f, 10f));
         // Player의 위치 초기화
-        player[0].transform.localPosition = new Vector3(Random.Range(-5.0f, 3.0f), 0.0f, Random.Range(-5.0f, 3.0f));
+        players[0].transform.localPosition = new Vector3(Random.Range(-5.0f, 3.0f), 0.0f, Random.Range(-5.0f, 3.0f));
         //m_PlayerRb.velocity = new Vector3(Random.Range(-3.0f, 3.0f), 0.0f, Random.Range(-3.0f, 3.0f));
         SetResetParameters();
         Debug.Log("에피소드 시작!!");
@@ -117,7 +139,7 @@ public class BossEyeAgent : Agent
     public void SetResetParameters()
     {
         m_EpisodeTimer = 0f;
-        player[0].GetComponent<Player>().ResetParameters();
+        SetUpPlayerInfos();
     }
 
     /////////////////////////// 보스의 액션 구현부 //////////////////////////////
@@ -151,8 +173,8 @@ public class BossEyeAgent : Agent
             if(hitCollider.CompareTag("Player"))
             {
                 Debug.Log("Player Missile Hit!");
-                hitCollider.GetComponent<Player>()?.TakeDamage(110.0f); // 폭발 적중시 바로 플레이어 사망
-                AddReward(2.0f);
+                hitCollider.GetComponent<Player>()?.TakeDamage(missileDamage); // 폭발 적중시 바로 플레이어 사망
+                AddReward(1.0f);
             }
         }
     }
