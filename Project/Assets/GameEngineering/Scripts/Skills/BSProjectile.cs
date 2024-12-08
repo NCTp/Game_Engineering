@@ -7,15 +7,8 @@ public class BSProjectile : MonoBehaviour
     GameObject target;
     float damage = 0f;
     float speed;
-    float lifeTime = 10f;
+    float lifeTime = 10f; // 너무 긴 시간 동안 적중되지 않은 투사체를 자동 소멸시키기 위한 타이머
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
     void Update()
     {
         lifeTime -= Time.deltaTime;
@@ -27,7 +20,7 @@ public class BSProjectile : MonoBehaviour
             transform.position = Vector3.MoveTowards(transform.position, targetPos, speed * Time.deltaTime);
         }
         else
-            Destroy(gameObject);
+            Destroy(gameObject); // Target이 사라졌거나 lifeTime이 0 이하로 떨어지면 소멸
     }
 
     public void Initialize(GameObject target, float damage, float speed)
@@ -45,6 +38,6 @@ public class BSProjectile : MonoBehaviour
             Destroy(gameObject);
         }
         else if (other.CompareTag("Floor"))
-            Destroy(gameObject);
+            Destroy(gameObject); // 땅에 닿으면 소멸
     }
 }
