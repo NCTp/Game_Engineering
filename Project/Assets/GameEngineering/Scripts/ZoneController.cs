@@ -1,0 +1,23 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class ZoneController : MonoBehaviour
+{
+    // Start is called before the first frame update
+    void Start()
+    {
+        
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
+    public int RequiredPlayers { get; private set; }    
+    public void SetZoneNumber(int requiredPlayers)
+    {
+        RequiredPlayers = requiredPlayers;
+    }
+}

@@ -138,7 +138,7 @@ public class Boss : MonoBehaviour
 
                 if (distanceToZone > 5f) //구역밖인지 확인
                 {
-                    PlayerHealth playerHealth = collider.GetComponent<PlayerHealth>();
+                    Player playerHealth = collider.GetComponent<Player>();
                     if (playerHealth != null)
                     {
                         playerHealth.TakeDamage(200f); //즉사
@@ -158,7 +158,7 @@ public class Boss : MonoBehaviour
         {
             if (collider.CompareTag("Player"))
             {
-                PlayerHealth playerHealth = collider.GetComponent<PlayerHealth>();
+                Player playerHealth = collider.GetComponent<Player>();
                 if (playerHealth != null)
                 {
                     playerHealth.TakeDamage(200f);
