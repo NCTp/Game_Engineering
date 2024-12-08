@@ -10,6 +10,10 @@ using Random = UnityEngine.Random;
 public class BossEyeAgent : Agent
 {
 
+    [Header("BossEye 파라미터")]
+    public float maxHealth = 100.0f;
+    public float currentHealth {get; private set;}
+
     [Header("Agent 세팅")]
     public bool useVectorObs;
     private Rigidbody m_BossEyeRb;
@@ -77,20 +81,19 @@ public class BossEyeAgent : Agent
         // 벡터 센서를 통한 관측 데이터의 수 7개
         if(useVectorObs)
         {
-            // BossEye의 회전량 관측 (3개)
-            sensor.AddObservation(gameObject.transform.rotation.x);
-            sensor.AddObservation(gameObject.transform.rotation.y);
-            sensor.AddObservation(gameObject.transform.rotation.z);
-            // Player의 위치 관측 (4 * n개)
-            foreach(Rigidbody m_PlayerRb in m_PlayerRbs)
+            // Player의 위치 관측 (2 * 8 = 16개)
+            // 너무 큰 Space Size가 되므로 y좌표는 관측하지 않음.
+            for(int i = 0; i < 8; i++)
             {
-                if (m_PlayerRb != null)
+                if(i < players.Length && players[i] != null)
                 {
-                    sensor.AddObservation(m_PlayerRbs[0].velocity.normalized.x);
-                    sensor.AddObservation(m_PlayerRbs[0].velocity.normalized.y);
-                    sensor.AddObservation(m_PlayerRbs[0].velocity.normalized.z);
-                    // Player와 BossEye의 거리 관측
-                    sensor.AddObservation((m_PlayerRbs[0].position - m_BossEyeRb.position).magnitude);
+                    sensor.AddObservation(players[i].transform.position.x);
+                    sensor.AddObservation(players[i].transform.position.z); 
+                }
+                else
+                {
+                    sensor.AddObservation(Vector3.zero.x);
+                    sensor.AddObservation(Vector3.zero.z);
                 }
             }
         }
@@ -139,10 +142,23 @@ public class BossEyeAgent : Agent
     public void SetResetParameters()
     {
         m_EpisodeTimer = 0f;
+        currentHealth = maxHealth;
         SetUpPlayerInfos();
     }
 
+    public void TakeDamage(float amount)
+    {
+        currentHealth -= amount;
+        //Debug.Log("BossEye 현재 체력 : " + currentHealth);
+        if (currentHealth <= 0)
+        {
+            AddReward(-2.0f); // 보스가 죽을 경우 패널티를 줍니다.
+            EndEpisode(); // 보스가 죽을 경우 에피소드를 종료합니다.
+        }
+    }
+
     /////////////////////////// 보스의 액션 구현부 //////////////////////////////
+    
 
     // DropMissile(Vector3 dropPos)
     // 특정 지점에 1초 뒤 미사일을 투하합니다.

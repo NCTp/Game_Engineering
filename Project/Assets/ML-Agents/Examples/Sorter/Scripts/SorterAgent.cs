@@ -60,6 +60,7 @@ public class SorterAgent : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
+        
         sensor.AddObservation((transform.position.x - m_Area.transform.position.x) / 20f);
         sensor.AddObservation((transform.position.z - m_Area.transform.position.z) / 20f);
 
