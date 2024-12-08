@@ -4,24 +4,16 @@ using UnityEngine;
 
 public class BasicAttack : MonoBehaviour
 {
-    [SerializeField] Boss boss;
+    Boss boss;
     [SerializeField] GameObject projectilePrefab;
     [SerializeField] Transform shootPos;
     [SerializeField] float damage;
     [SerializeField] float bulletSpeed;
 
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        
+        boss = transform.GetComponentInParent<Boss>();
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     public void LaunchSkill(GameObject target)
     {
         boss.transform.LookAt(target.transform);

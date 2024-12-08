@@ -4,15 +4,9 @@ using UnityEngine;
 
 public class MeteoInstance : MonoBehaviour
 {
-    GameObject stone;
-    float preDelay = 0.1f;
-    float speed = 17.5f;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        stone = transform.Find("stone").gameObject;
-    }
+    float preDelay = 0.5f;
+    float damage = 0f;
+    float speed = 30f;
 
     // Update is called once per frame
     void Update()
@@ -23,15 +17,16 @@ public class MeteoInstance : MonoBehaviour
             return;
         }
 
-        if (stone.transform.localPosition.y < 3f)
-            Destroy(gameObject); 
+        if (transform.localPosition.y < 3f)
+            Destroy(transform.parent.gameObject); 
 
-        stone.transform.position += Vector3.down * speed * Time.deltaTime;
+        transform.position += Vector3.down * speed * Time.deltaTime;
     }
 
-    public void Initialize(float preDelay, float speed)
+    public void Initialize(float preDelay, float damage, float speed)
     {
         this.preDelay = preDelay;
+        this.damage = damage;
         this.speed = speed;
     }
 
@@ -39,8 +34,8 @@ public class MeteoInstance : MonoBehaviour
     {
         if(other.CompareTag("Player"))
         {
-            other.GetComponent<Player>().TakeDamage(0f);
-            Destroy(gameObject);
+            other.GetComponent<Player>().TakeDamage(damage);
+            Destroy(transform.parent.gameObject);
         }
     }
 }

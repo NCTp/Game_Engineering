@@ -5,7 +5,7 @@ using UnityEngine;
 public class BSProjectile : MonoBehaviour
 {
     GameObject target;
-    float damage;
+    float damage = 0f;
     float speed;
     float lifeTime = 10f;
 
@@ -41,7 +41,7 @@ public class BSProjectile : MonoBehaviour
     {
         if(other.gameObject == target)
         {
-            // Damage Logic
+            other.GetComponent<Player>().TakeDamage(damage);
             Destroy(gameObject);
         }
         else if (other.CompareTag("Floor"))
