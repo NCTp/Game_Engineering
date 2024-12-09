@@ -16,15 +16,17 @@ public class BossEyeAgent : Agent
 
     [Header("Agent 세팅")]
     public bool useVectorObs;
+    public float arenaSize = 10.0f; // 보스 행동 범위 제한
     private Rigidbody m_BossEyeRb;
     private EnvironmentParameters m_ResetParams;
-    [SerializeField] private GameObject[] players;
 
     [Header("Player 관련 파라미터")]
     public GameObject playerPrefab; // 후에 플레이어 스폰을 위한 플레이어 프리팹
+    [SerializeField] private GameObject[] players;
     private Rigidbody[] m_PlayerRbs;
     private float m_EpisodeTimer;
     public float MAX_EPISODE_TIME = 5f;
+    public int numPlayers = 1;
 
     [Header("DropMissile 스킬 세팅")]
     public float missileDamage = 50.0f;
@@ -60,11 +62,6 @@ public class BossEyeAgent : Agent
     }
     public override void Initialize()
     {
-        if (players == null)
-        {
-            Debug.LogError("Player 오브젝트가 할당되지 않았습니다!");
-            return;
-        }
 
         m_BossEyeRb = GetComponent<Rigidbody>();
         if (m_BossEyeRb == null)
@@ -88,11 +85,11 @@ public class BossEyeAgent : Agent
                 if(i < players.Length && players[i] != null)
                 {
                     sensor.AddObservation(players[i].transform.position.x);
-                    sensor.AddObservation(players[i].transform.position.z); 
+                    sensor.AddObservation(players[i].transform.position.z);
                 }
                 else
                 {
-                    sensor.AddObservation(Vector3.zero.x);
+                    sensor.AddObservation(Vector3.zero.x); // 빈 부분에는 0으로 채운다.
                     sensor.AddObservation(Vector3.zero.z);
                 }
             }
@@ -106,11 +103,15 @@ public class BossEyeAgent : Agent
         {
             SetReward(-1f);
             EndEpisode();
-        }
+        } 
         else
         {
             // 연속행동값 받기.
             var continuousActions = actions.ContinuousActions;
+            float xPos = Mathf.Clamp(continuousActions[0], arenaSize, - arenaSize);
+            float zPos = Mathf.Clamp(continuousActions[1],arenaSize, -arenaSize);
+            Vector3 dropPos = new Vector3(xPos, 0.0f, zPos);
+            DropMissile(dropPos);
         }
     }
 
@@ -121,6 +122,7 @@ public class BossEyeAgent : Agent
             Debug.LogError("필수 오브젝트가 없습니다!");
             return;
         }
+
         // BossEye의 회전량 초기화 및 랜덤 회전 추가
         gameObject.transform.rotation = new Quaternion(0f, 0f, 0f, 0f);
         gameObject.transform.localPosition = new Vector3(0f, 1.5f, 0f);
@@ -128,8 +130,7 @@ public class BossEyeAgent : Agent
         gameObject.transform.Rotate(new Vector3(0, 1, 0), Random.Range(-10f, 10f));
         gameObject.transform.Rotate(new Vector3(0, 0, 1), Random.Range(-10f, 10f));
         // Player의 위치 초기화
-        players[0].transform.localPosition = new Vector3(Random.Range(-5.0f, 3.0f), 0.0f, Random.Range(-5.0f, 3.0f));
-        //m_PlayerRb.velocity = new Vector3(Random.Range(-3.0f, 3.0f), 0.0f, Random.Range(-3.0f, 3.0f));
+        SpawnPlayers();
         SetResetParameters();
         Debug.Log("에피소드 시작!!");
     }
@@ -142,8 +143,9 @@ public class BossEyeAgent : Agent
     public void SetResetParameters()
     {
         m_EpisodeTimer = 0f;
+        numPlayers = Mathf.RoundToInt(m_ResetParams.GetWithDefault("num_of_players",1));
         currentHealth = maxHealth;
-        SetUpPlayerInfos();
+        //SetUpPlayerInfos();
     }
 
     public void TakeDamage(float amount)
@@ -157,8 +159,28 @@ public class BossEyeAgent : Agent
         }
     }
 
+    void SpawnPlayers()
+    {
+        Debug.Log("플레이어를 스폰합니다.");
+        foreach(GameObject player in players)
+        {
+            Destroy(player);
+        }
+        players = new GameObject[numPlayers];
+        m_PlayerRbs = new Rigidbody[numPlayers];
+        for (int i = 0; i < numPlayers; i++)
+        {
+            GameObject player = Instantiate(playerPrefab, transform);
+            players[i] = player;
+            m_PlayerRbs[i] = player.GetComponent<Rigidbody>();
+            player.transform.position = new Vector3(Random.Range(-5.0f, 3.0f), 0.0f, Random.Range(-5.0f, 3.0f));
+            players[i].GetComponent<Player>().ResetParameters();
+            m_PlayerRbs[i].velocity = new Vector3(Random.Range(-3.0f, 3.0f), 0.0f, Random.Range(-3.0f, 3.0f));
+        }
+}
+
     /////////////////////////// 보스의 액션 구현부 //////////////////////////////
-    
+
 
     // DropMissile(Vector3 dropPos)
     // 특정 지점에 1초 뒤 미사일을 투하합니다.

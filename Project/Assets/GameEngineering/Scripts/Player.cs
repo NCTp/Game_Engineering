@@ -73,12 +73,12 @@ public class Player : MonoBehaviour
     {
         if(m_rb != null)
         {
-            
+
             m_rb.velocity = new Vector3(
                 Random.Range(-m_CurrentSpeed, m_CurrentSpeed),
                 0f,
                 Random.Range(-m_CurrentSpeed, m_CurrentSpeed)).normalized * m_CurrentSpeed;
-                
+
             //m_rb.velocity = Vector3.forward * m_CurrentSpeed;
             m_incomingVector = m_rb.velocity;
         }
@@ -122,6 +122,7 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+        //transform.position = new Vector3(transform.position.x, 0.0f, transform.position.z);
         attackTimer += Time.deltaTime;
         if (attackTimer >= attackRate)
         {
