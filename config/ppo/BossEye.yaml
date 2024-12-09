@@ -2,8 +2,8 @@ behaviors:
   BossEye:
     trainer_type: ppo
     hyperparameters:
-      batch_size: 64
-      buffer_size: 12000
+      batch_size: 1024
+      buffer_size: 20400
       learning_rate: 0.0003
       beta: 0.001
       epsilon: 0.2
@@ -12,7 +12,7 @@ behaviors:
       learning_rate_schedule: linear
     network_settings:
       normalize: true
-      hidden_units: 128
+      hidden_units: 256
       num_layers: 2
       vis_encode_type: simple
     reward_signals:
@@ -21,5 +21,49 @@ behaviors:
         strength: 1.0
     keep_checkpoints: 5
     max_steps: 500000
-    time_horizon: 1000
-    summary_freq: 12000
+    time_horizon: 64
+    summary_freq: 10000
+
+environment_parameters:
+  num_players:
+    curriculum:
+      - name: Lesson0  # 1대1 전투
+        completion_criteria:
+          measure: reward
+          behavior: BossAgent
+          signal_smoothing: true
+          min_lesson_length: 1000
+          threshold: 10.0
+        value: 1  # 플레이어 수: 1
+      - name: Lesson1  # 1대2 전투
+        completion_criteria:
+          measure: reward
+          behavior: BossAgent
+          signal_smoothing: true
+          min_lesson_length: 2000
+          threshold: 20.0
+        value: 2  # 플레이어 수: 2
+      - name: Lesson2  # 1대3 전투
+        completion_criteria:
+          measure: reward
+          behavior: BossAgent
+          signal_smoothing: true
+          min_lesson_length: 3000
+          threshold: 30.0
+        value: 3  # 플레이어 수: 3
+      - name: Lesson3  # 1대4 전투
+        completion_criteria:
+          measure: reward
+          behavior: BossAgent
+          signal_smoothing: true
+          min_lesson_length: 4000
+          threshold: 40.0
+        value: 4  # 플레이어 수: 4
+      - name: Lesson4  # 1대 5 전투
+        completion_criteria:
+          measure: reward
+          behavior: BossAgent
+          signal_smoothing: true
+          min_lesson_length: 5000
+          threshold: 50.0
+        value: 5  # 플레이어 수: 5
