@@ -2,7 +2,9 @@
     "name": "Unity.ML-Agents.Extensions.Tests",
     "references": [
         "Unity.ML-Agents.Extensions",
-        "Unity.ML-Agents"
+        "Unity.ML-Agents",
+        "Unity.ML-Agents.CommunicatorObjects",
+        "Unity.ML-Agents.Extensions.Input"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

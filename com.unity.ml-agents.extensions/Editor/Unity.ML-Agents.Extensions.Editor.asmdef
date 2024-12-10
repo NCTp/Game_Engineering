@@ -3,7 +3,9 @@
     "references": [
       "Unity.ML-Agents.Extensions",
       "Unity.ML-Agents",
-      "Unity.ML-Agents.Editor"
+      "Unity.ML-Agents.Editor",
+      "Unity.ML-Agents.CommunicatorObjects",
+      "Unity.ML-Agents.Extensions.Input"
     ],
     "includePlatforms": [
         "Editor"

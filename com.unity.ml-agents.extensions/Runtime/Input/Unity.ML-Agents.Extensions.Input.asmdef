@@ -3,7 +3,8 @@
     "references": [
         "Unity.ML-Agents",
         "Unity.Sentis",
-        "Unity.InputSystem"
+        "Unity.InputSystem",
+        "Unity.ML-Agents.CommunicatorObjects"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

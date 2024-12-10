@@ -13,6 +13,7 @@ public class BossEyeAgent : Agent
     [Header("BossEye 파라미터")]
     public float maxHealth = 100.0f;
     public float currentHealth {get; private set;}
+    //public float rayDistance = 10.0f;
 
     [Header("Agent 세팅")]
     public bool useVectorObs;
@@ -40,6 +41,12 @@ public class BossEyeAgent : Agent
 
     private Vector3 missileDropPos;
 
+    [Header("디버깅 설정")]
+    private LineRenderer m_LineRenderer;
+    public float rayDistance = 10f; // Ray의 길이
+    public float rayWidth = 0.1f; // Ray의 두께
+    public Color rayColor = Color.red; // Ray의 색상
+
 
     void SetUpPlayerInfos()
     {
@@ -64,6 +71,12 @@ public class BossEyeAgent : Agent
     {
 
         m_BossEyeRb = GetComponent<Rigidbody>();
+        m_LineRenderer = GetComponent<LineRenderer>();
+        m_LineRenderer.startWidth = rayWidth; // 시작 두께
+        m_LineRenderer.endWidth = rayWidth;   // 끝 두께
+        m_LineRenderer.material = new Material(Shader.Find("Sprites/Default")); // 단순한 Shader
+        m_LineRenderer.startColor = rayColor;
+        m_LineRenderer.endColor = rayColor;
         if (m_BossEyeRb == null)
         {
             Debug.LogError("Rigidbody 컴포넌트를 찾을 수 없습니다!");
@@ -103,15 +116,22 @@ public class BossEyeAgent : Agent
         {
             SetReward(-1f);
             EndEpisode();
-        } 
+        }
         else
         {
-            // 연속행동값 받기.
+            /*
+            // Continuous Action 값을 가져오기
             var continuousActions = actions.ContinuousActions;
-            float xPos = Mathf.Clamp(continuousActions[0], arenaSize, - arenaSize);
-            float zPos = Mathf.Clamp(continuousActions[1],arenaSize, -arenaSize);
-            Vector3 dropPos = new Vector3(xPos, 0.0f, zPos);
+
+            // 행동 값을 Arena 범위로 변환
+            float dropX = actions.ContinuousActions[0];
+            float dropZ = actions.ContinuousActions[1];
+            Vector3 dropPos = new Vector3(dropX, 0, dropZ);
+
+            // DropMissile 스킬 실행
+            Debug.Log(dropPos);
             DropMissile(dropPos);
+            */
         }
     }
 
@@ -124,11 +144,11 @@ public class BossEyeAgent : Agent
         }
 
         // BossEye의 회전량 초기화 및 랜덤 회전 추가
-        gameObject.transform.rotation = new Quaternion(0f, 0f, 0f, 0f);
-        gameObject.transform.localPosition = new Vector3(0f, 1.5f, 0f);
-        gameObject.transform.Rotate(new Vector3(1, 0, 0), Random.Range(-10f, 10f));
-        gameObject.transform.Rotate(new Vector3(0, 1, 0), Random.Range(-10f, 10f));
-        gameObject.transform.Rotate(new Vector3(0, 0, 1), Random.Range(-10f, 10f));
+        //gameObject.transform.rotation = new Quaternion(0f, 0f, 0f, 0f);
+        //gameObject.transform.localPosition = new Vector3(0f, 1.5f, 0f);
+        //gameObject.transform.Rotate(new Vector3(1, 0, 0), Random.Range(-10f, 10f));
+        //gameObject.transform.Rotate(new Vector3(0, 1, 0), Random.Range(-10f, 10f));
+        //gameObject.transform.Rotate(new Vector3(0, 0, 1), Random.Range(-10f, 10f));
         // Player의 위치 초기화
         SpawnPlayers();
         SetResetParameters();
@@ -170,10 +190,10 @@ public class BossEyeAgent : Agent
         m_PlayerRbs = new Rigidbody[numPlayers];
         for (int i = 0; i < numPlayers; i++)
         {
-            GameObject player = Instantiate(playerPrefab, transform);
+            GameObject player = Instantiate(playerPrefab);
             players[i] = player;
             m_PlayerRbs[i] = player.GetComponent<Rigidbody>();
-            player.transform.position = new Vector3(Random.Range(-5.0f, 3.0f), 0.0f, Random.Range(-5.0f, 3.0f));
+            player.transform.position = new Vector3(Random.Range(-20.0f, 20.0f), 0.0f, Random.Range(-20.0f, 20.0f));
             players[i].GetComponent<Player>().ResetParameters();
             m_PlayerRbs[i].velocity = new Vector3(Random.Range(-3.0f, 3.0f), 0.0f, Random.Range(-3.0f, 3.0f));
         }
@@ -228,11 +248,12 @@ public class BossEyeAgent : Agent
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            DropMissile(new Vector3(4.0f, 0.0f, 4.0f));
-        }
+        // LineRenderer로 Ray 시각화
+        Vector3 startPosition = transform.position;
+        Vector3 endPosition = transform.position + transform.forward * rayDistance;
 
+        m_LineRenderer.SetPosition(0, startPosition); // 시작점
+        m_LineRenderer.SetPosition(1, endPosition);   // 끝점
     }
 
 }

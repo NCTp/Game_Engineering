@@ -3,6 +3,7 @@
     "references": [
         "Unity.Sentis",
         "Unity.ML-Agents",
-        "Unity.ML-Agents.Extensions.Input"
+        "Unity.ML-Agents.Extensions.Input",
+        "Unity.ML-Agents.CommunicatorObjects"
     ]
 }

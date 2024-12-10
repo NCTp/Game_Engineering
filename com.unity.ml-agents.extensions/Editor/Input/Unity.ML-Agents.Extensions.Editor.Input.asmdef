@@ -4,7 +4,8 @@
         "Unity.ML-Agents",
         "Unity.ML-Agents.Extensions.Input",
         "Unity.ML-Agents.Editor",
-        "Unity.InputSystem"
+        "Unity.InputSystem",
+        "Unity.ML-Agents.CommunicatorObjects"
     ],
     "includePlatforms": [
         "Editor"
