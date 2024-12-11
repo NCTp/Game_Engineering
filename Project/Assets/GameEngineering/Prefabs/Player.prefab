@@ -150,7 +150,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerType: 0
   maxHealth: 50
-  speed: 20
+  speed: 5
   attackPower: 10
   attackRate: 1
   attackTimer: 0
