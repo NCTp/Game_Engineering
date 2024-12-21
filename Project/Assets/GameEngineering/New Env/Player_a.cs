@@ -4,15 +4,21 @@ using UnityEngine;
 
 public class Player_a : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public bool isAlive;
+
+    void Awake()
     {
-        
+        Reset();
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    public void Reset()
+    {
+        isAlive = true;
     }
 }
