@@ -57,14 +57,34 @@ public class Player_a : MonoBehaviour
     private void AvoidBossAttack()
     {
         Vector3 avoidDirection = (transform.position - boss.position).normalized;
-        Vector3 movePosition = transform.position + avoidDirection * moveSpeed * Time.deltaTime;
+        avoidDirection.y = 0; //y축 움직임 제거
+        
+        Vector3 RanDirection = Vector3.Cross(avoidDirection, Vector3.up).normalized;
+        float randomVal = Random.Range(-1f, 1f); //랜덤 벡터 추가
+        Vector3 randomOffset = RanDirection * randomVal * moveSpeed * Time.deltaTime;
+
+        Vector3 finalDirection = avoidDirection + randomOffset;
+        finalDirection.Normalize();
+        finalDirection.y = 0;
+
+        Vector3 movePosition = transform.position + finalDirection * moveSpeed * Time.deltaTime;
         transform.position = movePosition;
     }
 
     private void MoveTowardsBoss()
     {
        Vector3 direction = (boss.position - transform.position).normalized;
-        transform.position += direction * moveSpeed * Time.deltaTime;
+       direction.y = 0; //y축 제거
+
+        Vector3 RanDirection = Vector3.Cross(direction, Vector3.up).normalized;
+        float randomVal = Random.Range(-1f, 1f); // 랜덤 벡터 추가
+        Vector3 randomOffset = RanDirection * randomVal * moveSpeed * Time.deltaTime;
+
+        Vector3 finalDirection = direction + randomOffset;
+        finalDirection.Normalize();
+        finalDirection.y = 0;
+
+        transform.position += finalDirection * moveSpeed * Time.deltaTime;
     }
 
     private void Attack()
