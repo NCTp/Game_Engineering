@@ -17,19 +17,14 @@ public class Player_a : MonoBehaviour
 
     private Vector3 startPosition;
     private float lastAttackTime = 0f;
-    private bool bossIsAttacking = false;
-
 
     void Awake()
     {
+        startPosition = transform.position;
         Reset();
     }
 
     // Update is called once per frame
-    void Start()
-    {
-        startPosition = transform.position;
-    }
     void Update()
     {
         float distanceToBoss = Vector3.Distance(transform.position, boss.position);

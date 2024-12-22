@@ -8,7 +8,7 @@ using System;
 
 public class BossAgent_a : Agent
 {
-    public EnvManager_a env;
+    private EnvManager_a env;
     private Boss_a boss;
 
     [Header("스킬 쿨다운 정보")]
@@ -16,9 +16,11 @@ public class BossAgent_a : Agent
     private float remainBasicAttackCoolDown;
     [SerializeField] private float baseMeteoCoolDown;
     private float remainMeteoCoolDown;
+    public bool IsAttacking;
 
     public override void Initialize()
     {
+        env = GetComponentInParent<EnvManager_a>();
         boss = GetComponent<Boss_a>();
         if (!env)
             Debug.LogError("Agent의 소속 환경을 찾을 수 없습니다.");
@@ -28,13 +30,12 @@ public class BossAgent_a : Agent
 
     public override void OnEpisodeBegin()
     {
-        boss.Reset();
-        env.Reset();
+        env.ResetEntireEnv();
     }
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        for(int i = 0; i < 8; i++)
+        for(int i = 0; i < EnvManager_a.MAX_PLAYER; i++)
         {
             if(i < env.players.Length && env.players[i] != null)
             {
@@ -64,10 +65,14 @@ public class BossAgent_a : Agent
                 remainBasicAttackCoolDown = baseBasicAttackCoolDown;
                 break;
             case 2:
-                List<Vector3> strikePos = new List<Vector3>();
-                for(int i  = 0; i < 5; i++)
-                    strikePos.Add(new Vector3(actions.ContinuousActions[i * 2], 0f, actions.ContinuousActions[i * 2 + 1]));
-                boss.m_meteo.LaunchSkill(strikePos.ToArray());
+                Vector3[] strikePos = new Vector3[5];
+                for(int i = 0; i < 5; i++)
+                {
+                    float actionX = Mathf.Clamp(actions.ContinuousActions[i * 2], -1f, 1f);
+                    float actionZ = Mathf.Clamp(actions.ContinuousActions[i * 2 + 1], -1f, 1f);
+                    strikePos[i] = new Vector3(actionX, 0f, actionZ);
+                }
+                boss.m_meteo.LaunchSkill(strikePos);
                 remainMeteoCoolDown = baseMeteoCoolDown;
                 break;
         }
@@ -89,6 +94,7 @@ public class BossAgent_a : Agent
     
     public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
     {
+        Debug.Log("액션 마스크 변경");
         bool basicAttackReady = remainBasicAttackCoolDown <= 0f;
         actionMask.SetActionEnabled(0, 1, basicAttackReady);
         actionMask.SetActionEnabled(1, 0, !basicAttackReady);
