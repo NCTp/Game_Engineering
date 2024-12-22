@@ -10,7 +10,7 @@ public class EnvManager_a : MonoBehaviour
 
     private EnvironmentParameters m_ResetParams;
     public int numPlayers;
-    public GameObject go_player;
+    public GameObject playerPrefab;
     public BossAgent_a bossAgent;
     public Boss_a boss;
     public Player_a[] players;
@@ -22,15 +22,11 @@ public class EnvManager_a : MonoBehaviour
         players = new Player_a[MAX_PLAYER];
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
+    /// <summary>
+    /// numPlayer 받아와 player 새로 생성 및 player와 boss 초기화 
+    /// </summary>
     public void ResetEntireEnv()
     {
-        boss.Reset();
         numPlayers = Mathf.RoundToInt(m_ResetParams.GetWithDefault("num_of_players",1));
         foreach(Player_a p in players)
         {
@@ -40,9 +36,11 @@ public class EnvManager_a : MonoBehaviour
         Array.Resize(ref players, numPlayers);
         for (int i = 0; i < numPlayers; i++)
         {
-            players[i] = Instantiate(go_player, spawnPoints[i % 4].position, Quaternion.identity).GetComponent<Player_a>();
-            players[i].Reset();
+            players[i] = Instantiate(playerPrefab, spawnPoints[i % 4].position, Quaternion.identity, transform).GetComponent<Player_a>();
+            players[i].boss = this.boss.transform;
+            players[i].ResetPlayer();
         }
+        boss.ResetBoss(numPlayers);
     }
 
 }

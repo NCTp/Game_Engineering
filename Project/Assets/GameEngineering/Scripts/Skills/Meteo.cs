@@ -10,13 +10,29 @@ public class Meteo : MonoBehaviour
     [SerializeField] float damage = 0f;
     [SerializeField] float speed = 30f;
 
+    private BossAgent_a agent;
+
+    private void Awake()
+    {
+        agent = GetComponentInParent<BossAgent_a>();
+    }
+
     public void LaunchSkill(Vector3[] strikingPos)
     {
-        foreach(Vector3 pos in strikingPos)
+        StartCoroutine(ManipAttackFlag());
+
+        foreach (Vector3 pos in strikingPos)
         {
             Vector3 finalPos = new Vector3(pos.x, height, pos.z);
             MeteoInstance instance = Instantiate(meteoPrefab, finalPos, Quaternion.Euler(0f, 0f, 0f)).GetComponentInChildren<MeteoInstance>();
             instance.Initialize(preDelay, damage, speed);
         }
+    }
+
+    IEnumerator ManipAttackFlag()
+    {
+        agent.isAttacking = true;
+        yield return new WaitForSeconds(0.75f);
+        agent.isAttacking = false;
     }
 }

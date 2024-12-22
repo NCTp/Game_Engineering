@@ -16,7 +16,7 @@ public class BossAgent_a : Agent
     private float remainBasicAttackCoolDown;
     [SerializeField] private float baseMeteoCoolDown;
     private float remainMeteoCoolDown;
-    public bool IsAttacking;
+    public bool isAttacking;
 
     public override void Initialize()
     {
@@ -30,6 +30,10 @@ public class BossAgent_a : Agent
 
     public override void OnEpisodeBegin()
     {
+        Debug.Log("New Episode Begin");
+        remainBasicAttackCoolDown = 0f;
+        remainMeteoCoolDown = 0f;
+        isAttacking = false;
         env.ResetEntireEnv();
     }
 
@@ -37,24 +41,27 @@ public class BossAgent_a : Agent
     {
         for(int i = 0; i < EnvManager_a.MAX_PLAYER; i++)
         {
-            if(i < env.players.Length && env.players[i] != null)
+            if((i < env.players.Length) && (env.players[i] != null) && (env.players[i].health > 0f))
             {
                 sensor.AddObservation(env.players[i].transform.position.x);
                 sensor.AddObservation(env.players[i].transform.position.z);
+                sensor.AddObservation(env.players[i].health);
             }
             else
             {
                 sensor.AddObservation(Vector3.zero.x); // 빈 부분에는 0으로 채운다.
                 sensor.AddObservation(Vector3.zero.z);
+                sensor.AddObservation(0f);
             }
         }
+        sensor.AddObservation(boss.CurrentHealth);
     }
 
     public override void OnActionReceived(ActionBuffers actions)
     {
         // Discrete Actions
         // branch 0 size : 3
-        // branch 1 size : 9
+        // branch 1 size : 5
         // Continuous Actions: 10
         int baseAction = actions.DiscreteActions[0];
         int targetCode = actions.DiscreteActions[1];
@@ -94,11 +101,10 @@ public class BossAgent_a : Agent
     
     public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
     {
-        Debug.Log("액션 마스크 변경");
         bool basicAttackReady = remainBasicAttackCoolDown <= 0f;
         actionMask.SetActionEnabled(0, 1, basicAttackReady);
         actionMask.SetActionEnabled(1, 0, !basicAttackReady);
-        for (int i = 1; i < 9; i++)
+        for (int i = 1; i < 5; i++)
         {
             // 살아있는 player만 타겟으로 지정 가능
             actionMask.SetActionEnabled(1, i, basicAttackReady && i <= env.numPlayers && env.players[i-1].isAlive);

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class BasicAttack : MonoBehaviour
 {
-    Boss boss;
+    Boss_a boss;
     [SerializeField] GameObject projectilePrefab;
     [SerializeField] Transform shootPos;
     [SerializeField] float damage;
@@ -12,7 +12,7 @@ public class BasicAttack : MonoBehaviour
 
     void Awake()
     {
-        boss = transform.GetComponentInParent<Boss>();
+        boss = transform.GetComponentInParent<Boss_a>();
     }
     public void LaunchSkill(GameObject target)
     {

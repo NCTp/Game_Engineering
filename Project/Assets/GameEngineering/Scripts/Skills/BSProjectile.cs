@@ -34,7 +34,7 @@ public class BSProjectile : MonoBehaviour
     {
         if(other.gameObject == target)
         {
-            other.GetComponent<Player>().TakeDamage(damage);
+            other.GetComponent<Player_a>().TakeDamage(damage);
             Destroy(gameObject);
         }
         else if (other.CompareTag("Floor"))

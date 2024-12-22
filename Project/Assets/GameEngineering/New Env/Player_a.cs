@@ -2,17 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.InputSystem.Processors;
 
 public class Player_a : MonoBehaviour
 {
     [Header("PlayerSettings")]
     public Transform boss;
     public Transform attackPoint;
-    public float attackRange = 2f;
-    public float moveSpeed = 2f;
+    public float attackRange = 7f;
+    public float moveSpeed = 4f;
     public float health = 100f;
     public float attackCooldown = 1f;
-    public int attackDMG = 10;
+    public float attackDMG = 1f;
     public bool isAlive;
 
     private Vector3 startPosition;
@@ -21,7 +22,7 @@ public class Player_a : MonoBehaviour
     void Awake()
     {
         startPosition = transform.position;
-        Reset();
+        ResetPlayer();
     }
 
     // Update is called once per frame
@@ -48,7 +49,7 @@ public class Player_a : MonoBehaviour
         BossAgent_a bossAgent = boss.GetComponent<BossAgent_a>();
         if (bossAgent != null )
         {
-            return bossAgent.IsAttacking;
+            return bossAgent.isAttacking;
         }
         return false;
     }
@@ -82,11 +83,25 @@ public class Player_a : MonoBehaviour
         }
     }
 
-    public void Reset()
+    public void ResetPlayer()
     {
         isAlive = true;
         health = 100f;
         transform.position = startPosition;
         lastAttackTime = 0f;
+    }
+
+    public void TakeDamage(float damage)
+    {
+        health -= damage;
+        if (health < 0f)
+            Dead();
+    }
+
+    public void Dead()
+    {
+        isAlive = false;
+        transform.localPosition = Vector3.zero;
+        gameObject.SetActive(false);
     }
 }
