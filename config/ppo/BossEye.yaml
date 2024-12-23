@@ -20,9 +20,9 @@ behaviors:
         gamma: 0.99
         strength: 1.0
     keep_checkpoints: 5
-    max_steps: 1000000
+    max_steps: 4000000
     time_horizon: 64
-    summary_freq: 20000
+    summary_freq: 40000
 
 environment_parameters:
   num_players:
@@ -30,40 +30,40 @@ environment_parameters:
       - name: Lesson0 
         completion_criteria:
           measure: reward
-          behavior: BossAgent
+          behavior: BossEye
           signal_smoothing: true
-          min_lesson_length: 1000
-          threshold: 10.0
+          min_lesson_length: 100
+          threshold: 0.8
         value: 1  
       - name: Lesson1  
         completion_criteria:
           measure: reward
-          behavior: BossAgent
+          behavior: BossEye
           signal_smoothing: true
-          min_lesson_length: 2000
-          threshold: 20.0
+          min_lesson_length: 200
+          threshold: 0.8
         value: 2  
       - name: Lesson2  
         completion_criteria:
           measure: reward
-          behavior: BossAgent
+          behavior: BossEye
           signal_smoothing: true
-          min_lesson_length: 3000
-          threshold: 30.0
+          min_lesson_length: 300
+          threshold: 0.8
         value: 3 
       - name: Lesson3 
         completion_criteria:
           measure: reward
-          behavior: BossAgent
+          behavior: BossEye
           signal_smoothing: true
-          min_lesson_length: 4000
-          threshold: 40.0
+          min_lesson_length: 400
+          threshold: 0.8
         value: 4 
       - name: Lesson4  
         completion_criteria:
           measure: reward
-          behavior: BossAgent
+          behavior: BossEye
           signal_smoothing: true
-          min_lesson_length: 5000
-          threshold: 50.0
+          min_lesson_length: 500
+          threshold: 500.0
         value: 5 

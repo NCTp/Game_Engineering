@@ -42,8 +42,8 @@ public class BossAgent_a : Agent
         {
             if((i < env.players.Length) && (env.players[i] != null) && (env.players[i].health > 0f))
             {
-                sensor.AddObservation(env.players[i].transform.position.x);
-                sensor.AddObservation(env.players[i].transform.position.z);
+                sensor.AddObservation(env.players[i].transform.localPosition.x);
+                sensor.AddObservation(env.players[i].transform.localPosition.z);
                 sensor.AddObservation(env.players[i].health);
             }
             else
