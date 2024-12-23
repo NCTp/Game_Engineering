@@ -23,9 +23,9 @@ public class Meteo : MonoBehaviour
 
         foreach (Vector3 pos in strikingPos)
         {
-            Vector3 finalPos = new Vector3(pos.x, height, pos.z);
+            Vector3 finalPos = new Vector3(pos.x + agent.transform.position.x, height, pos.z + agent.transform.position.z);
             MeteoInstance instance = Instantiate(meteoPrefab, finalPos, Quaternion.Euler(0f, 0f, 0f)).GetComponentInChildren<MeteoInstance>();
-            instance.Initialize(preDelay, damage, speed);
+            instance.Initialize(agent, preDelay, damage, speed);
         }
     }
 

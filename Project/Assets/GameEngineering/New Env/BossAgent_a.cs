@@ -30,7 +30,6 @@ public class BossAgent_a : Agent
 
     public override void OnEpisodeBegin()
     {
-        Debug.Log("New Episode Begin");
         remainBasicAttackCoolDown = 0f;
         remainMeteoCoolDown = 0f;
         isAttacking = false;
@@ -75,8 +74,8 @@ public class BossAgent_a : Agent
                 Vector3[] strikePos = new Vector3[5];
                 for(int i = 0; i < 5; i++)
                 {
-                    float actionX = Mathf.Clamp(actions.ContinuousActions[i * 2], -1f, 1f);
-                    float actionZ = Mathf.Clamp(actions.ContinuousActions[i * 2 + 1], -1f, 1f);
+                    float actionX = 20f * Mathf.Clamp(actions.ContinuousActions[i * 2], -1f, 1f);
+                    float actionZ = 20f * Mathf.Clamp(actions.ContinuousActions[i * 2 + 1], -1f, 1f);
                     strikePos[i] = new Vector3(actionX, 0f, actionZ);
                 }
                 boss.m_meteo.LaunchSkill(strikePos);
@@ -103,19 +102,25 @@ public class BossAgent_a : Agent
     {
         bool basicAttackReady = remainBasicAttackCoolDown <= 0f;
         actionMask.SetActionEnabled(0, 1, basicAttackReady);
-        actionMask.SetActionEnabled(1, 0, !basicAttackReady);
+        bool isAPlayerAlive = false;
         for (int i = 1; i < 5; i++)
         {
             // 살아있는 player만 타겟으로 지정 가능
-            actionMask.SetActionEnabled(1, i, basicAttackReady && i <= env.numPlayers && env.players[i-1].isAlive);
+            bool value = basicAttackReady && i <= env.numPlayers && env.players[i - 1].isAlive;
+            actionMask.SetActionEnabled(1, i, value);
+            if (value)
+                isAPlayerAlive = true;
         }
+        if (isAPlayerAlive)
+            actionMask.SetActionEnabled(1, 0, !basicAttackReady);
+        else
+            actionMask.SetActionEnabled(1, 0, true);
 
         actionMask.SetActionEnabled(0, 2, remainMeteoCoolDown <= 0f);
     }
 
     public void Dead()
     {
-        AddReward(-2.0f); // 보스가 죽을 경우 패널티를 줍니다.
-        EndEpisode(); // 보스가 죽을 경우 에피소드를 종료합니다.
+        env.GameOver(false);
     }
 }

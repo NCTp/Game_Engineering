@@ -14,7 +14,8 @@ public class Boss_a : MonoBehaviour
     [HideInInspector] public BossAgent_a agent;
     [HideInInspector] public BasicAttack m_basicAttack;
     [HideInInspector] public Meteo m_meteo;
-    [SerializeField] private Slider hpBar;
+    private Slider hpBar;
+    private Camera cameraToFollow;
 
     void Awake()
     {
@@ -22,6 +23,12 @@ public class Boss_a : MonoBehaviour
         m_basicAttack = GetComponentInChildren<BasicAttack>();
         m_meteo = GetComponentInChildren<Meteo>();
         hpBar = GetComponentInChildren<Slider>();
+        cameraToFollow = GameObject.Find("Main Camera").GetComponent<Camera>();
+    }
+
+    private void Update()
+    {
+        hpBar.transform.rotation = Quaternion.LookRotation(hpBar.transform.position - cameraToFollow.transform.position);
     }
 
     public void ResetBoss(int numPlayers)

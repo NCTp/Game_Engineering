@@ -7,7 +7,7 @@ using UnityEngine.InputSystem.Processors;
 public class Player_a : MonoBehaviour
 {
     [Header("PlayerSettings")]
-    public Transform boss;
+    public Transform boss; // EnvManager_a가 초기화
     public Transform attackPoint;
     public float attackRange = 7f;
     public float moveSpeed = 4f;
@@ -61,7 +61,7 @@ public class Player_a : MonoBehaviour
         
         Vector3 RanDirection = Vector3.Cross(avoidDirection, Vector3.up).normalized;
         float randomVal = Random.Range(-1f, 1f); //랜덤 벡터 추가
-        Vector3 randomOffset = RanDirection * randomVal * moveSpeed * Time.deltaTime;
+        Vector3 randomOffset = RanDirection * randomVal;
 
         Vector3 finalDirection = avoidDirection + randomOffset;
         finalDirection.Normalize();
@@ -78,7 +78,7 @@ public class Player_a : MonoBehaviour
 
         Vector3 RanDirection = Vector3.Cross(direction, Vector3.up).normalized;
         float randomVal = Random.Range(-1f, 1f); // 랜덤 벡터 추가
-        Vector3 randomOffset = RanDirection * randomVal * moveSpeed * Time.deltaTime;
+        Vector3 randomOffset = RanDirection * randomVal;
 
         Vector3 finalDirection = direction + randomOffset;
         finalDirection.Normalize();
@@ -115,7 +115,10 @@ public class Player_a : MonoBehaviour
     {
         health -= damage;
         if (health < 0f)
+        {
+            health = 0f;
             Dead();
+        }
     }
 
     public void Dead()

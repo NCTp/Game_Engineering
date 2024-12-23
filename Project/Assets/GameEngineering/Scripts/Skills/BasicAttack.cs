@@ -16,7 +16,7 @@ public class BasicAttack : MonoBehaviour
     }
     public void LaunchSkill(GameObject target)
     {
-        boss.transform.LookAt(target.transform);
+        //boss.transform.LookAt(target.transform);
         BSProjectile projectile = Instantiate(projectilePrefab, shootPos.position, Quaternion.identity).GetComponent<BSProjectile>();
         projectile.Initialize(target, damage, bulletSpeed);
     }
